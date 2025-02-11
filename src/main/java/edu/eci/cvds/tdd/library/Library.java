@@ -35,7 +35,10 @@ public class Library {
      * @return true if the book was stored false otherwise.
      */
     public boolean addBook(Book book) {
-        //TODO Implement the logic to add a new book into the map.
+        if (book != null) {
+            books.put(book, books.getOrDefault(book, 0) + 1);
+            return true;
+        }
         return false;
     }
 
@@ -75,4 +78,8 @@ public class Library {
         return users.add(user);
     }
 
+    public Map<Book, Integer> getBooks() {
+        return books;
+    }
+    
 }
