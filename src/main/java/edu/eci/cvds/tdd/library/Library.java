@@ -105,7 +105,6 @@ public class Library {
             return null;
         }
         
-        // Buscar el préstamo en la lista para evitar problemas con equals
         Loan existingLoan = null;
         for (Loan l : loans) {
             if (l.equals(loan)) {
