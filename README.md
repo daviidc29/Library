@@ -282,7 +282,132 @@ Para validar que la estructura del proyecto está bien se debe compilar usando e
 Para poder implementar los métodos ```addBook, loanABook y returnLoan``` de la clase ```Library``` vamos a aplicar la técnica de TDD, por cada caso de prueba se debe hacer un commit, cada commit debe tener la prueba nueva y la implementación para que la prueba del commit funcione. Las pruebas anteriormente implementadas deben continuar funcionando.
 Como están trabajando en parejas es necesario trabajar en ramas independientes y utilizar Pull Request para mezclar los cambios.
 
+![alt text](Resources/imagen-7.png)
+
+
+![alt text](Resources/imagen-9.png)
+
+
+![alt text](Resources/imagen-12.png)
+
+
 ### CREAR CLASE DE PRUEBA
 Es necesario crear la clase de prueba para ```edu.eci.cvds.tdd.Library```, la clase debe seguir los estándares de nombres estudiados en clase.
 
+
+![alt text](Resources/imagen-8.png)
+
+
+![alt text](Resources/imagen-10.png)
+
+
+![alt text](Resources/imagen-11.png)
+
+
+
+
+
+
+
+
+
+
+
 Para pensar en los casos de pruebas lean detenidamente el javadoc de los métodos para reconocer las clases de equivalencia, basados en las clases de equivalencia se debe crear una prueba la cual debe fallar y posteriormente implementar el código necesario para que funcione, este proceso se debe repetir hasta cumplir con la especificación definida en el javadoc.
+### COBERTURA
+- Agregar la dependencia de jacoco, utilizar la última versión disponible en maven central.
+- Para usar Jacoco es necesario agregar la siguiente sección en el ```pom.xml```
+```xml
+<build>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.12</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <excludes>
+                <exclude>/configurators/</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+          <execution>
+          <id>jacoco-check</id>
+          <goals>
+            <goal>check</goal>
+          </goals>
+          <configuration>
+            <rules>
+              <rule>
+                <element>PACKAGE</element>
+                  <limits>
+                    <limit>
+                      <counter>CLASS</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.85</minimum><!--Porcentaje mínimo de cubrimiento para construir el proyecto-->
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+```
+Ahora al compilar el proyecto en la carpeta ```target``` se debe crear una carpeta con el nombre site la cual tiene un ```index.html```, al abrir dicho archivo se debe ver la cobertura total y de cada una de las clases, el objetivo es tener la cobertura superior al 80%.
+
+Explore los links del reporte en el cual le muestra que partes del código tienen prueba y cuales no.
+
+### SONARQUBE
+Ahora es necesario hacer el análisis estático del código usando SonarQube, para lo cual necesitamos tener Docker.
+
+- Para lo cual se debe descargar la imagen de docker con el siguiente comando ```docker pull sonarqube``` 
+- Ahora se debe arrancar el servicio de SonarQube con el siguiente comando ```docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest```
+- Validar funcionamiento ```docker ps -a```
+- Iniciar sesión en sonar ```localhost:9000``` cambiar la clave por defecto usuario y contraseña es admin.
+- Entrar a las opciones de la cuenta.
+  - Account -> settings -> generate token.
+- Una vez sonar este corriendo deben generar un token  
+- Instale sonarLint en el IDE que este manejando.
+- Añada el plugin de Sonar en el archivo pom del proyecto.
+```xml
+<plugin>
+    <groupId>org.sonarsource.scanner.maven</groupId>
+    <artifactId>sonar-maven-plugin</artifactId>
+    <version>4.0.0.4121</version>
+</plugin>
+```
+- Añada las propiedades de SonarQube y Jacoco.
+```xml
+<sonar.projectKey>library</sonar.projectKey>
+<sonar.projectName>library</sonar.projectName> 
+<sonar.host.url>http://localhost:9000</sonar.host.url>
+<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+<sonar.coverage.exclusions>src//configurators/*</sonar.coverage.exclusions>
+```
+- Construya el proyecto, genere el reporte de JACOCO y corrija el cubrimiento de las pruebas de unidad para que su proyecto se construya adecuadamente.
+- genere la integración con sonar ```mvn verify sonar:sonar -D sonar.token=[TOKEN_GENERADO]```
+
+**Token generado**
+![alt text](Resources/imagen-5.png)
+![alt text](Resources/imagen-15.png)
+![alt text](Resources/imagen-16.png)
+
+
+**Reporte de cubrimiento de JACOCO**
+![alt text](Resources/imagen-13.png)
+
+![alt text](Resources/imagen-14.png)
