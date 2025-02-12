@@ -83,12 +83,33 @@ class LibraryTest {
 
     @Test
     void testIsReturnLoan(){
+        library.addUser(user);
+        library.addBook(book);
+        Loan loan = library.loanABook(user.getId(), book.getIsbn());
         
+        assertNotNull(loan);
+        assertEquals(LoanStatus.ACTIVE, loan.getStatus());
+        
+        Loan returnedLoan = library.returnLoan(loan);
+        
+        assertNotNull(returnedLoan);
+        assertEquals(LoanStatus.RETURNED, returnedLoan.getStatus());
+        assertNotNull(returnedLoan.getReturnDate());
+        assertEquals(1, library.getBooks().get(book));
     }
     
     @Test
     void testIsNotReturnLoan(){
+        Loan loan = new Loan();
+        loan.setBook(book);
+        loan.setUser(user);
+        loan.setStatus(LoanStatus.RETURNED);
         
+        Loan returnedLoan = library.returnLoan(loan);
+        assertNull(returnedLoan);
+        
+        Loan nullLoan = library.returnLoan(null);
+        assertNull(nullLoan);
     } 
 
     @Test

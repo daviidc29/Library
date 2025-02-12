@@ -1,13 +1,15 @@
 package edu.eci.cvds.tdd.library;
 
-import edu.eci.cvds.tdd.library.book.Book;
-import edu.eci.cvds.tdd.library.loan.Loan;
-import edu.eci.cvds.tdd.library.user.User;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import edu.eci.cvds.tdd.library.book.Book;
+import edu.eci.cvds.tdd.library.loan.Loan;
+import edu.eci.cvds.tdd.library.loan.LoanStatus;
+import edu.eci.cvds.tdd.library.user.User;
 
 /**
  * Library responsible for manage the loans and the users.
@@ -57,6 +59,7 @@ public class Library {
         return null;
     }
 
+
     /**
      * This method return a loan, meaning that the amount of books should be increased by 1, the status of the Loan
      * in the loan list should be {@link edu.eci.cvds.tdd.library.loan.LoanStatus#RETURNED} and the loan return
@@ -67,13 +70,25 @@ public class Library {
      * @return the loan with the RETURNED status.
      */
     public Loan returnLoan(Loan loan) {
-        //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
-        return null;
+        if (loan == null || loan.getStatus() == LoanStatus.RETURNED || !loans.contains(loan)) {
+            return null;
+        }
+        
+        loan.setStatus(LoanStatus.RETURNED);
+        loan.setReturnDate(LocalDateTime.now());
+        
+        Book book = loan.getBook();
+        books.put(book, books.getOrDefault(book, 0) + 1);
+        
+        return loan;
     }
 
     public boolean addUser(User user) {
         return users.add(user);
     }
 
+    public Map<Book, Integer> getBooks() {
+        return books;
+    }
     
 }
