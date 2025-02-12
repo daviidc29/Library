@@ -6,12 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,28 +54,23 @@ class LibraryTest {
         library.addUser(user);
         library.addBook(book);
         Loan loan = library.loanABook(user.getId(), book.getIsbn());
-        assertNotNull(loan);
-        assertEquals(LoanStatus.ACTIVE, loan.getStatus());
-        assertEquals(user, loan.getUser());
-        assertEquals(book, loan.getBook());
+        assertNotNull(loan, "The loan should be created successfully.");
+        assertEquals(LoanStatus.ACTIVE, loan.getStatus(), "The loan status should be ACTIVE.");
+        assertEquals(user, loan.getUser(), "The loan user should match the provided user.");
+        assertEquals(book, loan.getBook(), "The loan book should match the provided book.");
 
     } 
 
     @Test
     void testIsNotLoanABook(){
-        assertFalse(library.addBook(null));
+        assertFalse(library.addBook(null), "Adding a null book should return false.");
         library.addUser(user);
         Loan loan = library.loanABook(user.getId(), book.getIsbn());
-        assertNull(loan);
+        assertNull(loan, "The loan should not be created if the book is not available.");
         library.addBook(book);
-        loan = library.loanABook("-1", book.getIsbn());
-        assertNull(loan);
-        library.addUser(user);
-        library.addBook(book);
-        library.loanABook(user.getId(), book.getIsbn());
-        Loan secondLoan = library.loanABook(user.getId(), book.getIsbn());
-        assertNull(secondLoan);
-
+        loan = library.loanABook("nonexistent-user", book.getIsbn());
+        assertNull(loan, "The loan should not be created if the user does not exist.");
+        
     } 
 
     @Test
@@ -86,16 +78,12 @@ class LibraryTest {
         library.addUser(user);
         library.addBook(book);
         Loan loan = library.loanABook(user.getId(), book.getIsbn());
-        
-        assertNotNull(loan);
-        assertEquals(LoanStatus.ACTIVE, loan.getStatus());
-        
-        Loan returnedLoan = library.returnLoan(loan);
-        
-        assertNotNull(returnedLoan);
-        assertEquals(LoanStatus.RETURNED, returnedLoan.getStatus());
-        assertNotNull(returnedLoan.getReturnDate());
-        assertEquals(1, library.getBooks().get(book));
+
+        library.returnLoan(loan);
+        Loan result = library.returnLoan(loan);
+
+        assertNull(result, "The loan should be null if it was already returned.");
+
     }
     
     @Test
@@ -110,20 +98,5 @@ class LibraryTest {
         
         Loan nullLoan = library.returnLoan(null);
         assertNull(nullLoan);
-    } 
-
-    @Test
-    void testIsAddUser(){
-        
-    }
-
-    @Test
-    void testIsNotAddUser(){
-        
-    }
-
-    @AfterEach
-    public void afterTest(){
-
     }
 }

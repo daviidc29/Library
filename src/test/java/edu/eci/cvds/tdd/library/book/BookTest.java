@@ -14,17 +14,16 @@ class BookTest {
  
     @Test
     void testGetAuthor(){
-        Book book=new Book("cien años de soledad", "Gabriel Garcia Marquez", "12345");
+        Book book= new Book("cien años de soledad", "Gabriel Garcia Marquez", "12345");
         assertEquals("Gabriel Garcia Marquez", book.getAuthor());
  
     }
- 
     @Test
- 
     void testGetIsbn(){
-        Book book=new Book("cien años de soledad", "Gabriel Garcia Marquez", "12345");
+        Book book = new Book("cien años de soledad","Gabriel Garcia Marquez","12345");
         assertEquals("12345", book.getIsbn());
- 
-    }
- 
+
+    }
+    
 }
+
