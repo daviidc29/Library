@@ -1,5 +1,6 @@
 package edu.eci.cvds.tdd.library;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import edu.eci.cvds.tdd.library.book.Book;
 import edu.eci.cvds.tdd.library.loan.Loan;
+import edu.eci.cvds.tdd.library.loan.LoanStatus;
 import edu.eci.cvds.tdd.library.user.User;
 
 /**
@@ -56,8 +58,37 @@ public class Library {
      * @return The new created loan.
      */
     public Loan loanABook(String userId, String isbn) {
-        //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
-        return null;
+        User user = users.stream()
+            .filter(u -> u.getId().equals(userId))
+            .findFirst()
+            .orElse(null);
+        
+        Book book = books.keySet().stream()
+            .filter(b -> b.getIsbn().equals(isbn))
+            .findFirst()
+            .orElse(null);
+
+        if (user == null || book == null || books.get(book) <= 0) {
+            return null;
+        }
+        
+        boolean alreadyHasLoan = loans.stream()
+            .anyMatch(l -> l.getUser().getId().equals(userId) && 
+                            l.getBook().getIsbn().equals(isbn) &&
+                            l.getStatus() == LoanStatus.ACTIVE);
+                                                
+        if (alreadyHasLoan) {
+            return null;
+        }
+
+        Loan loan = new Loan();
+        loan.setUser(user);
+        loan.setBook(book);
+        loan.setLoanDate(LocalDateTime.now());
+        loan.setStatus(LoanStatus.ACTIVE);
+        loans.add(loan);
+        books.put(book, books.get(book) - 1);
+        return loan;
     }
 
     /**
@@ -70,10 +101,34 @@ public class Library {
      * @return the loan with the RETURNED status.
      */
     public Loan returnLoan(Loan loan) {
-        //TODO Implement the login of loan a book to a user based on the UserId and the isbn.
-        return null;
+        if (loan == null || loan.getStatus() == LoanStatus.RETURNED) {
+            return null;
+        }
+        
+        // Buscar el préstamo en la lista para evitar problemas con equals
+        Loan existingLoan = null;
+        for (Loan l : loans) {
+            if (l.equals(loan)) {
+                existingLoan = l;
+                break;
+            }
+        }
+        
+        if (existingLoan == null) {
+            return null;
+        }
+        
+        existingLoan.setStatus(LoanStatus.RETURNED);
+        existingLoan.setReturnDate(LocalDateTime.now());
+        
+        Book book = existingLoan.getBook();
+        books.put(book, books.getOrDefault(book, 0) + 1);
+        
+        return existingLoan;
     }
-
+    
+    
+    
     public boolean addUser(User user) {
         return users.add(user);
     }

@@ -53,6 +53,6 @@ class LoanTest {
        
         loan.setReturnDate(returnDate);
         assertEquals(returnDate, loan.getReturnDate());
-    }
- 
+    }
+
 }

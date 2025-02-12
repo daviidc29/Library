@@ -34,5 +34,5 @@ class UserTest {
         user.setId("123456");
         user.setId("9876543");
         assertEquals("9876543", user.getId());
-    }
+    }
 }

@@ -21,6 +21,7 @@
     <sonar.host.url>http://localhost:9000</sonar.host.url>
     <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <sonar.coverage.exclusions>src//configurators/*</sonar.coverage.exclusions>
+    <sonar.login>sqp_4e606e400bed8254556f94c714ce71e108a91e58</sonar.login>
   </properties>
 
   <dependencyManagement>
