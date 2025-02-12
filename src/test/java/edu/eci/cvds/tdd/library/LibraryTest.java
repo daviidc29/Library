@@ -2,7 +2,7 @@ package edu.eci.cvds.tdd.library;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -17,27 +17,27 @@ import org.junit.jupiter.api.Test;
 
 import edu.eci.cvds.tdd.library.book.Book;
 import edu.eci.cvds.tdd.library.loan.Loan;
+import edu.eci.cvds.tdd.library.loan.LoanStatus;
 import edu.eci.cvds.tdd.library.user.User;
 
-public class LibraryTest {
+class LibraryTest {
     private Library library;
     private Map<Book, Integer> books;
     private Book book;
-    private List<User> users;
-    private List<Loan> loans;
-
+    private User user;
 
     @BeforeEach
     public void setUp(){
         library = new Library();
         books = new HashMap<>();
         book = new Book("Cien años de soledad", "Gabriel Marquez", "9788497592208");        
-        users = new ArrayList<>();
-        loans = new ArrayList<>();
+        user = new User();
+        user.setName("John");
+        user.setId("12345");
     }
     
     @Test
-    public void testIsAddBook(){
+    void testIsAddBook(){
         books.put(book, books.getOrDefault(book, 0) + 1);
         assertTrue(library.addBook(book));
         assertTrue(library.getBooks().containsKey(book));
@@ -45,40 +45,59 @@ public class LibraryTest {
     } 
 
     @Test
-    public void testIsNotAddBook(){
-        Book book = null;
-        library.addBook(book);
+    void testIsNotAddBook(){
+        Book book2 = null;
+        library.addBook(book2);
         assertFalse(library.getBooks().containsKey(null));
-        assertEquals(null, library.getBooks().get(book));
+        assertEquals(null, library.getBooks().get(book2));
     } 
 
     @Test
-    public void testIsLoanABook(){
-        
+    void testIsLoanABook(){
+        library.addUser(user);
+        library.addBook(book);
+        Loan loan = library.loanABook(user.getId(), book.getIsbn());
+        assertNotNull(loan);
+        assertEquals(LoanStatus.ACTIVE, loan.getStatus());
+        assertEquals(user, loan.getUser());
+        assertEquals(book, loan.getBook());
+
     } 
 
     @Test
-    public void testIsNotLoanABook(){
-        
+    void testIsNotLoanABook(){
+        assertFalse(library.addBook(null));
+        library.addUser(user);
+        Loan loan = library.loanABook(user.getId(), book.getIsbn());
+        assertNull(loan);
+        library.addBook(book);
+        loan = library.loanABook("-1", book.getIsbn());
+        assertNull(loan);
+        library.addUser(user);
+        library.addBook(book);
+        library.loanABook(user.getId(), book.getIsbn());
+        Loan secondLoan = library.loanABook(user.getId(), book.getIsbn());
+        assertNull(secondLoan);
+
     } 
 
     @Test
-    public void testIsReturnLoan(){
+    void testIsReturnLoan(){
         
     }
     
     @Test
-    public void testIsNotReturnLoan(){
+    void testIsNotReturnLoan(){
         
     } 
 
     @Test
-    public void testIsAddUser(){
+    void testIsAddUser(){
         
     }
 
     @Test
-    public void testIsNotAddUser(){
+    void testIsNotAddUser(){
         
     }
 
